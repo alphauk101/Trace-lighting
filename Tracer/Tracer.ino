@@ -1,6 +1,6 @@
 #include "Adafruit_NeoPixel.h"
-#include "startburn.h"
 #include "phaseloop.h"
+#include "trans.h"
 #include "utils.h"
 #include "defines.h"
 #ifdef __AVR__
@@ -20,12 +20,11 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(76, PIN, NEO_GRB + NEO_KHZ800);
 
 
 /*Each effect has its own file to keep things easier, each effect must have a start_effect() public function
-this will start the effect and block until complete (some effects may have other functions but this is mandatory.
-Effects will assume the lighting is properly setup ready to go*/
+  this will start the effect and block until complete (some effects may have other functions but this is mandatory.
+  Effects will assume the lighting is properly setup ready to go*/
 
-efct_startburn e_startburn;/*This effect is only intended for startup*/
 efct_phaseloop e_phaseloop;/*just loops round*/
-
+transistion e_trans;/*simple transtions*/
 void setup() {
 #ifdef DEBUG
   Serial.begin(9600);
@@ -38,63 +37,31 @@ void setup() {
   strip.begin();
 
   /*initaite the startup*/
-  e_startburn.start_effect(&strip);
 
+  e_trans.init(&strip);
+
+  e_trans.fadeUp();
+  e_trans.fadeDown();
+  e_trans.fadeUp();
+  e_trans.fadeDown();
+  e_trans.fadeUp();
   /*We slowly faded up and waited appropriately we can now start the main loop*/
   delay(EFFECT_HOLD_SECS * 1000);
   /*now do the loop scan*/
+  e_trans.fadeDown();
 }
 
 void loop() {
 
-  
-  e_phaseloop.start_effect(&strip);
-  
 
+  e_phaseloop.start_effect(&strip);
   /*It is better to hold the effect for sometime or else we risk looking a bit OTT*/
   delay(EFFECT_HOLD_SECS * 1000);
-}
-
-void setAllLeds(uint32_t c)
-{
-  for (uint16_t i = 0; i < strip.numPixels(); i++) {
-    strip.setPixelColor(i, c);
-  }
-}
-
-void dotChase(uint32_t c, uint8_t wait)
-{
-  for (uint16_t i = 0; i < strip.numPixels(); i++) {
-    strip.clear();
-    strip.setPixelColor(i++, c);
-    strip.setPixelColor(i++, c);
-    strip.setPixelColor(i++, c);
-    strip.show();
-    delay(wait);
-  }
-}
-
-void doubleDotChase(uint32_t c)
-{
-  for (uint16_t i = 0; i < strip.numPixels(); i++) {
-    strip.clear();
-    //dot one
-    strip.setPixelColor(i++, c);
-    strip.setPixelColor(i++, c);
-    strip.setPixelColor(i++, c);
+  e_trans.fadeDown();
 
 
-    strip.show();
-    delay(10);
-  }
 }
 
 
-// Fill the dots one after the other with a color
-void colorWipe(uint32_t c, uint8_t wait) {
-  for (uint16_t i = 0; i < strip.numPixels(); i++) {
-    strip.setPixelColor(i, c);
-    strip.show();
-    delay(wait);
-  }
-}
+
+

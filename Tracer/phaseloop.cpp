@@ -18,25 +18,81 @@ void efct_phaseloop::start_effect(Adafruit_NeoPixel* strp) {
   strip_ptr = strp;
 
   /*simple effect that rotates the leds*/
-  for (uint8_t a = 15; a > 0; a--)
+  uint8_t del = 10;
+  for (uint8_t a = 0; a < 150; a++)
   {
-    this->doloop(a);
+    this->doloop(del, a);
+    if (del != 0)
+      if ((a % 10) == 0) del--;
+
   }
 
-  for (uint8_t a = 10; a > 0; a--)
-  {
-    this->doloop(0);
-  }
-  this->fadeup();
   /*Next appear to be fully on and burning up :)*/
   util.setAll(strip_ptr->Color(0, MAX_COLOUR, 0), strip_ptr);
   strip_ptr->show();
+
+  delay(1000);
+
+  this->goToWhite();
+  this->goToGreen();
+  /*done!*/
+}
+
+void efct_phaseloop::goToGreen() {
+
+  /*the leds are currently green so we are going to start feeding in a white phase*/
+  uint32_t lc = 0;
+  uint8_t intens = 255;
+  bool loop_locked = true;
+  colour c;
+  while (loop_locked) {
+    /*first set the pixels for this loop*/
+    for (uint16_t x = strip_ptr->numPixels(); x > 0; x--) {
+      /*set all to green*/
+      c = strip_ptr->Color(intens, MAX_COLOUR, intens);
+      util.setAll(c, strip_ptr);
+      strip_ptr->show();
+    }
+
+    if ((lc % 2) == 0)intens--;
+    lc++;
+
+    if (intens == 0) loop_locked = false;
+  }
+
+  /*hold white for a while*/
   delay(5000);
 }
 
+void efct_phaseloop::goToWhite() {
+
+  /*the leds are currently green so we are going to start feeding in a white phase*/
+  uint32_t lc = 0;
+  uint8_t intens = 0;
+  bool loop_locked = true;
+  colour c;
+  while (loop_locked) {
+    /*first set the pixels for this loop*/
+    for (uint16_t x = strip_ptr->numPixels(); x > 0; x--) {
+      /*set all to green*/
+      c = strip_ptr->Color(intens, MAX_COLOUR, intens);
+      util.setAll(c, strip_ptr);
+      strip_ptr->show();
+    }
+
+    if ((lc % 2) == 0)intens++;
+    lc++;
+    if (intens == MAX_COLOUR) loop_locked = false;
+  }
+
+  /*hold white for a while*/
+  delay(5000);
+}
+
+#ifdef NOPE
 void efct_phaseloop::fadeup() {
   uint32_t c = 0;
-  uint8_t loops = 75;
+  uint8_t loops = 175;
   uint8_t steps = (MAX_COLOUR - loops);
 
   for (uint8_t z = 0; z < loops; z++) {
@@ -52,12 +108,15 @@ void efct_phaseloop::fadeup() {
     delay(loops - z);
   }
 }
+#endif
 
-void efct_phaseloop::doloop(uint8_t spd)
+void efct_phaseloop::doloop(uint8_t spd, uint8_t backint)
 {
   /*as we go round the loop we want there to be a faded - not faded - faded type of effect*/
+  colour bg = strip_ptr->Color(0, backint, 0);
   for (uint16_t x = strip_ptr->numPixels(); x > 0; x--) {
-    strip_ptr->clear();
+    util.setAll(bg, strip_ptr);
+
     strip_ptr->setPixelColor(x, TA);
     if ((x + 7) < strip_ptr->numPixels()) {
       strip_ptr->setPixelColor(x + 1, TC);

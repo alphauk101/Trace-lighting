@@ -12,6 +12,9 @@ typedef uint32_t colour;
 #define MIN_COLOUR        0
 #define MAX_COLOUR        255
 
+/*transtion fade time*/
+#define FADE_TIME         1
+
 //#define EFFECT_HOLD_SECS  30
 #define EFFECT_HOLD_SECS  3
 

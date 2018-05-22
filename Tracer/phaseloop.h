@@ -16,10 +16,11 @@ class efct_phaseloop{
   void start_effect(Adafruit_NeoPixel*);
 
   private:
-  void doloop(uint8_t);
+  void doloop(uint8_t,uint8_t);
   void setAll(colour);
   void fadeup(void);
-
+  void goToWhite(void);
+  void goToGreen(void);
   Adafruit_NeoPixel *strip_ptr;
 };
 #endif
