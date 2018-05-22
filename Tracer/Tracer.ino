@@ -1,10 +1,12 @@
 #include "Adafruit_NeoPixel.h"
+#include "startburn.h"
+#include "phaseloop.h"
+#include "utils.h"
+#include "defines.h"
 #ifdef __AVR__
 #include <avr/power.h>
 #endif
 
-#define DEBUG
-#define PIN 6
 
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = Arduino pin number (most are valid)
@@ -17,6 +19,12 @@
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(76, PIN, NEO_GRB + NEO_KHZ800);
 
 
+/*Each effect has its own file to keep things easier, each effect must have a start_effect() public function
+this will start the effect and block until complete (some effects may have other functions but this is mandatory.
+Effects will assume the lighting is properly setup ready to go*/
+
+efct_startburn e_startburn;/*This effect is only intended for startup*/
+efct_phaseloop e_phaseloop;/*just loops round*/
 
 void setup() {
 #ifdef DEBUG
@@ -28,43 +36,29 @@ void setup() {
 #endif
 
   strip.begin();
-  strip.show(); // Initialize all pixels to 'off'
 
-  colorWipe(strip.Color(0, 255, 0), 50); //
+  /*initaite the startup*/
+  e_startburn.start_effect(&strip);
 
-  delay(1000);
-
+  /*We slowly faded up and waited appropriately we can now start the main loop*/
+  delay(EFFECT_HOLD_SECS * 1000);
+  /*now do the loop scan*/
 }
-uint8_t spd = 50;
-uint32_t c = 0;
-uint8_t red, green, blue = 0;
+
 void loop() {
-  // put your main code here, to run repeatedly:
-  dotChase(c, spd);
 
+  
+  e_phaseloop.start_effect(&strip);
+  
 
-
-  if (spd == 0)
-  {
-    if (red != 255) {
-      red++;
-    } else {
-      if (blue != 255)
-        blue++;
-    }
-
-    setAllLeds(strip.Color(red, 255, blue));
-    strip.show();
-  } else {
-    c = strip.Color(0, 255, 0);
-    spd--;
-  }
+  /*It is better to hold the effect for sometime or else we risk looking a bit OTT*/
+  delay(EFFECT_HOLD_SECS * 1000);
 }
 
 void setAllLeds(uint32_t c)
 {
   for (uint16_t i = 0; i < strip.numPixels(); i++) {
-    strip.setPixelColor(i++, c);
+    strip.setPixelColor(i, c);
   }
 }
 
