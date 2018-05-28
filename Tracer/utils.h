@@ -7,6 +7,7 @@
 class utils{
   public:
   void setAll(colour, Adafruit_NeoPixel*);
+  void allOff(Adafruit_NeoPixel *);
 };
 
 

@@ -12,6 +12,8 @@ typedef uint32_t colour;
 #define MIN_COLOUR        0
 #define MAX_COLOUR        255
 
+#define BOTTOM_CENTER     17 /*which led is the center*/
+
 /*transtion fade time*/
 #define FADE_TIME         1
 

@@ -2,6 +2,7 @@
 #include "phaseloop.h"
 #include "trans.h"
 #include "utils.h"
+#include "nightride.h"
 #include "defines.h"
 #ifdef __AVR__
 #include <avr/power.h>
@@ -24,6 +25,7 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(76, PIN, NEO_GRB + NEO_KHZ800);
   Effects will assume the lighting is properly setup ready to go*/
 
 efct_phaseloop e_phaseloop;/*just loops round*/
+efct_nightride e_nightride;
 transistion e_trans;/*simple transtions*/
 void setup() {
 #ifdef DEBUG
@@ -55,6 +57,13 @@ void loop() {
 
 
   e_phaseloop.start_effect(&strip);
+
+  delay(EFFECT_HOLD_SECS * 1000);
+  e_trans.fadeDown();
+  
+  e_nightride.start_effect(&strip);
+
+  
   /*It is better to hold the effect for sometime or else we risk looking a bit OTT*/
   delay(EFFECT_HOLD_SECS * 1000);
   e_trans.fadeDown();
