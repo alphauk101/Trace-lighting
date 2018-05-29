@@ -80,7 +80,8 @@ void efct_phaseloop::goToWhite() {
       strip_ptr->show();
     }
 
-    if ((lc % 2) == 0)intens++;
+    if ((lc % 2
+    ) == 0)intens++;
     lc++;
     if (intens == MAX_COLOUR) loop_locked = false;
   }

@@ -56,7 +56,7 @@ void setup() {
 void loop() {
 
 
-  e_phaseloop.start_effect(&strip);
+  // e_phaseloop.start_effect(&strip);
 
   delay(EFFECT_HOLD_SECS * 1000);
   e_trans.fadeDown();
