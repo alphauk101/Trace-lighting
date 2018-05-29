@@ -5,7 +5,7 @@
 #define BOTTOM      4
 #define TOTAL_LEDS  (TOP - BOTTOM)
 #define SPEED       50
-#define BACKGROUND  stp_ptr->Color(20, 20, 20)
+#define BACKGROUND  stp_ptr->Color(0, 100, 0)
 
 void efct_nightride::start_effect(Adafruit_NeoPixel* strip_ptr) {
 
@@ -66,20 +66,20 @@ void efct_nightride::set_leds(uint8_t index, bool goRight)
 
   /*first clear the strip*/
   //util.allOff(stp_ptr);
-  util.setAll(BACKGROUND,stp_ptr);
+  util.setAll(BACKGROUND, stp_ptr);
   if (goRight) {
     /*knight rider there is a tail effect so*/
-    stp_ptr->setPixelColor((index + 4), stp_ptr->Color(0, 5, 0));
-    stp_ptr->setPixelColor((index + 3), stp_ptr->Color(0, 15, 0));
-    stp_ptr->setPixelColor((index + 2), stp_ptr->Color(0, 50, 0));
-    stp_ptr->setPixelColor((index + 1), stp_ptr->Color(0, 100, 0));
-    stp_ptr->setPixelColor(index, stp_ptr->Color(0, 255, 0));
+    stp_ptr->setPixelColor((index + 4), stp_ptr->Color(25,0,0));
+    stp_ptr->setPixelColor((index + 3), stp_ptr->Color(50,0,0));
+    stp_ptr->setPixelColor((index + 2), stp_ptr->Color(50,0,0));
+    stp_ptr->setPixelColor((index + 1), stp_ptr->Color(100,0,0));
+    stp_ptr->setPixelColor(index, stp_ptr->Color(MAX_COLOUR, 0, 0));
   } else {
-    stp_ptr->setPixelColor((index - 4), stp_ptr->Color(0, 5, 0));
-    stp_ptr->setPixelColor((index - 3), stp_ptr->Color(0, 15, 0));
-    stp_ptr->setPixelColor((index - 2), stp_ptr->Color(0, 50, 0));
-    stp_ptr->setPixelColor((index - 1), stp_ptr->Color(0, 100, 0));
-    stp_ptr->setPixelColor(index, stp_ptr->Color(0, 255, 0));
+    stp_ptr->setPixelColor((index - 4), stp_ptr->Color(25,0,0));
+    stp_ptr->setPixelColor((index - 3), stp_ptr->Color(50,0,0));
+    stp_ptr->setPixelColor((index - 2), stp_ptr->Color(75,0,0));
+    stp_ptr->setPixelColor((index - 1), stp_ptr->Color(100,0,0));
+    stp_ptr->setPixelColor(index, stp_ptr->Color(MAX_COLOUR,0,0));
   }
 }
 
