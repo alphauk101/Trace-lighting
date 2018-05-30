@@ -69,13 +69,13 @@ void efct_nightride::set_leds(uint8_t index, bool goRight)
   util.setAll(BACKGROUND, stp_ptr);
   if (goRight) {
     /*knight rider there is a tail effect so*/
-    stp_ptr->setPixelColor((index + 4), stp_ptr->Color(25,0,0));
+    stp_ptr->setPixelColor((index + 4), stp_ptr->Color(10,0,0));
     stp_ptr->setPixelColor((index + 3), stp_ptr->Color(50,0,0));
     stp_ptr->setPixelColor((index + 2), stp_ptr->Color(50,0,0));
     stp_ptr->setPixelColor((index + 1), stp_ptr->Color(100,0,0));
     stp_ptr->setPixelColor(index, stp_ptr->Color(MAX_COLOUR, 0, 0));
   } else {
-    stp_ptr->setPixelColor((index - 4), stp_ptr->Color(25,0,0));
+    stp_ptr->setPixelColor((index - 4), stp_ptr->Color(10,0,0));
     stp_ptr->setPixelColor((index - 3), stp_ptr->Color(50,0,0));
     stp_ptr->setPixelColor((index - 2), stp_ptr->Color(75,0,0));
     stp_ptr->setPixelColor((index - 1), stp_ptr->Color(100,0,0));
