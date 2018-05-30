@@ -3,6 +3,7 @@
 #include "trans.h"
 #include "utils.h"
 #include "nightride.h"
+#include "police.h"
 #include "defines.h"
 #ifdef __AVR__
 #include <avr/power.h>

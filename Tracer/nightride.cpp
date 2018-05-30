@@ -27,7 +27,6 @@ void efct_nightride::do_effect()
   }
 }
 
-
 /*These functions scroll the light the way the knight rider does
   in the appropriate direction*/
 void efct_nightride::goRight()
@@ -42,7 +41,6 @@ void efct_nightride::goRight()
     delay(SPEED);
     rightidx--;
   }
-
 }
 
 void efct_nightride::goLeft()
