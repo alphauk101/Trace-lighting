@@ -5,6 +5,7 @@
 #include "nightride.h"
 #include "police.h"
 #include "defines.h"
+#include "TimerOne.h"
 #ifdef __AVR__
 #include <avr/power.h>
 #endif
@@ -28,6 +29,10 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(76, PIN, NEO_GRB + NEO_KHZ800);
 efct_phaseloop e_phaseloop;/*just loops round*/
 efct_nightride e_nightride;
 transistion e_trans;/*simple transtions*/
+utils util;
+
+volatile int g_MicLevel = 0;
+
 void setup() {
 #ifdef DEBUG
   Serial.begin(9600);
@@ -36,6 +41,9 @@ void setup() {
 #if defined (__AVR_ATtiny85__)
   if (F_CPU == 16000000) clock_prescale_set(clock_div_1);
 #endif
+  /*Timer*/
+  Timer1.initialize(MIC_TIMER_INT); // set a timer of length 100000 microseconds (or 0.1 sec - or 10Hz => the led will blink 5 times, 5 cycles of on-and-off, per second)
+  Timer1.attachInterrupt( timerIsr ); // attach the service routine here
 
   strip.begin();
 
@@ -56,21 +64,50 @@ void setup() {
 
 void loop() {
 
-
-   e_phaseloop.start_effect(&strip);
+#ifdef bob
+  e_phaseloop.start_effect(&strip);
 
   delay(EFFECT_HOLD_SECS * 1000);
   e_trans.fadeDown();
-  
+
   e_nightride.start_effect(&strip);
 
-  
+
   /*It is better to hold the effect for sometime or else we risk looking a bit OTT*/
   delay(EFFECT_HOLD_SECS * 1000);
   e_trans.fadeDown();
+#endif
 
+  set_all_green();
+  delay(10);
 
 }
+
+void set_all_green()
+{
+  
+  util.setAll(strip.Color(0,getLevel(),0), &strip);
+}
+
+
+int getLevel()
+{
+  return map(g_MicLevel, 0, 1023, 0, 255);
+}
+
+/*Microphone timer ISR*/
+int tmp_lvl;
+void timerIsr()
+{
+  tmp_lvl = analogRead(MIC_AIO);
+  if (tmp_lvl > g_MicLevel)
+  {
+    g_MicLevel = tmp_lvl;
+  } else {
+    if (g_MicLevel > 0) g_MicLevel--;
+  }
+}
+
 
 
 

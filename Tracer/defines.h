@@ -7,6 +7,9 @@ typedef uint32_t colour;
 
 #define DEBUG
 
+#define MIC_TIMER_INT     500 /*Microseconds*/
+#define MIC_AIO           A5
+
 #define PIN 5 /*led data out pin*/
 
 #define MIN_COLOUR        0
@@ -17,8 +20,8 @@ typedef uint32_t colour;
 /*transtion fade time*/
 #define FADE_TIME         1
 
-#define EFFECT_HOLD_SECS  30
-//#define EFFECT_HOLD_SECS  3
+//#define EFFECT_HOLD_SECS  30
+#define EFFECT_HOLD_SECS  3
 
 
 
