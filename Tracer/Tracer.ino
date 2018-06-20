@@ -85,14 +85,27 @@ void loop() {
 
 void set_all_green()
 {
-  
-  util.setAll(strip.Color(0,getLevel(),0), &strip);
+  int level = getLevel();
+ /*
+  uint32_t color;
+  if(level < 200){
+    color = strip.Color(0,level,0);
+  }else if( (level > 200) && (level < 220) ){
+    color = strip.Color(level,level,0);
+  }else{
+    color = strip.Color(level,0,0);
+  }
+  */
+  util.setAll(strip.Color(0,level,0), &strip);
+  strip.show();
 }
 
 
 int getLevel()
 {
-  return map(g_MicLevel, 0, 1023, 0, 255);
+   //Serial.println(g_MicLevel);
+  if(g_MicLevel > 450)g_MicLevel=450;
+  return map(g_MicLevel, 0, 450, 0, 255);
 }
 
 /*Microphone timer ISR*/
@@ -106,6 +119,7 @@ void timerIsr()
   } else {
     if (g_MicLevel > 0) g_MicLevel--;
   }
+  //Serial.println(g_MicLevel);
 }
 
 

@@ -7,7 +7,7 @@ typedef uint32_t colour;
 
 #define DEBUG
 
-#define MIC_TIMER_INT     500 /*Microseconds*/
+#define MIC_TIMER_INT     5000 /*Microseconds*/
 #define MIC_AIO           A5
 
 #define PIN 5 /*led data out pin*/
