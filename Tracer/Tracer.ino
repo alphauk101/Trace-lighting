@@ -27,10 +27,22 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(76, PIN, NEO_GRB + NEO_KHZ800);
   Effects will assume the lighting is properly setup ready to go*/
 
 efct_phaseloop e_phaseloop;/*just loops round*/
-efct_nightride e_nightride;
+//efct_nightride e_nightride;
 transistion e_trans;/*simple transtions*/
 utils util;
 
+
+#define YELLOW_LIMIT        130
+#define MAX_LED             255 /*Max value a led can be*/
+
+typedef uint8_t S_COLOUR;
+#define GREEN   0
+#define YELLOW  1
+#define RED     2
+
+
+volatile S_COLOUR s_colour;
+volatile uint32_t s_output;
 volatile int g_MicLevel = 0;
 
 void setup() {
@@ -60,6 +72,8 @@ void setup() {
   delay(EFFECT_HOLD_SECS * 1000);
   /*now do the loop scan*/
   e_trans.fadeDown();
+
+  s_colour = GREEN;
 }
 
 void loop() {
@@ -83,20 +97,31 @@ void loop() {
 
 }
 
+volatile uint32_t red,green;
+uint32_t get_colour(int level)
+{
+  red = 0;
+  green = 0;
+  /*we need to start to add red at a certain threshold then once past a nother threshold start
+  removing green.*/
+
+  if(level > YELLOW_LIMIT){
+    red  = map((level - YELLOW_LIMIT), 0, (MAX_LED - YELLOW_LIMIT), 0, MAX_LED);  
+    green = map((MAX_LED - level), 0, (MAX_LED - YELLOW_LIMIT), 0, MAX_LED );
+  }else{
+    /*We can assume this is a easy green so*/
+    green = map(level, 0, YELLOW_LIMIT, 0, MAX_LED );
+   }
+  
+  return strip.Color(red,green,0);  
+}
+
 void set_all_green()
 {
   int level = getLevel();
- /*
-  uint32_t color;
-  if(level < 200){
-    color = strip.Color(0,level,0);
-  }else if( (level > 200) && (level < 220) ){
-    color = strip.Color(level,level,0);
-  }else{
-    color = strip.Color(level,0,0);
-  }
-  */
-  util.setAll(strip.Color(0,level,0), &strip);
+  s_output = get_colour(level);
+
+  util.setAll(s_output, &strip);
   strip.show();
 }
 
@@ -105,7 +130,7 @@ int getLevel()
 {
    //Serial.println(g_MicLevel);
   if(g_MicLevel > 450)g_MicLevel=450;
-  return map(g_MicLevel, 0, 450, 0, 255);
+  return map(g_MicLevel, 0, 450, 0, MAX_LED);
 }
 
 /*Microphone timer ISR*/
@@ -113,8 +138,7 @@ int tmp_lvl;
 void timerIsr()
 {
   tmp_lvl = analogRead(MIC_AIO);
-  if (tmp_lvl > g_MicLevel)
-  {
+  if(tmp_lvl > g_MicLevel){
     g_MicLevel = tmp_lvl;
   } else {
     if (g_MicLevel > 0) g_MicLevel--;
