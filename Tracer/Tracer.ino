@@ -10,6 +10,10 @@
 #include <avr/power.h>
 #endif
 
+typedef uint8_t MODE;
+#define STOL    0
+#define DISCO   1
+static MODE mode;
 
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = Arduino pin number (most are valid)
@@ -22,6 +26,10 @@
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(76, PIN, NEO_GRB + NEO_KHZ800);
 
 
+/*This is our array of 32bit colours*/
+const PROGMEM uint32_t gColourArray[] = {0x00FFFFFF, 0x00FF0000, 0x0000FF00, 0x000000FF};
+#define CARRAY_LEN    4
+
 /*Each effect has its own file to keep things easier, each effect must have a start_effect() public function
   this will start the effect and block until complete (some effects may have other functions but this is mandatory.
   Effects will assume the lighting is properly setup ready to go*/
@@ -31,6 +39,7 @@ efct_phaseloop e_phaseloop;/*just loops round*/
 transistion e_trans;/*simple transtions*/
 utils util;
 
+//#define SHOW_START
 
 #define YELLOW_LIMIT        130
 #define MAX_LED             255 /*Max value a led can be*/
@@ -59,8 +68,11 @@ void setup() {
 
   strip.begin();
 
+
+
   /*initaite the startup*/
 
+#ifdef SHOW_START
   e_trans.init(&strip);
 
   e_trans.fadeUp();
@@ -74,17 +86,14 @@ void setup() {
   e_trans.fadeDown();
 
   s_colour = GREEN;
-}
 
-void loop() {
 
-#ifdef bob
   e_phaseloop.start_effect(&strip);
 
   delay(EFFECT_HOLD_SECS * 1000);
   e_trans.fadeDown();
 
-  e_nightride.start_effect(&strip);
+  //e_nightride.start_effect(&strip);
 
 
   /*It is better to hold the effect for sometime or else we risk looking a bit OTT*/
@@ -92,31 +101,91 @@ void loop() {
   e_trans.fadeDown();
 #endif
 
-  set_all_green();
-  delay(10);
+  /*Set default mode*/
+  //mode = STOL;
+  mode = DISCO;
+}
+
+void loop() {
+
+  switch (mode)
+  {
+    case STOL:
+      /*Sets the level in accordance to the sound level*/
+      sound_to_light();
+      break;
+    case DISCO:
+      show_disco();
+      break;
+    default:
+      break;
+  }
+
+
+
+  delay(1000);
 
 }
 
-volatile uint32_t red,green;
+uint8_t d_state;
+#define DIVISER 4
+static uint32_t disco_lights[DIVISER];
+
+void show_disco()
+{
+  //First set our array of random colours
+  get_random_colours();
+
+  //Our array should now have the colours set
+  //Now apply these colours to the strip
+  strip.clear();
+  set_disco_strip();
+  strip.show();
+}
+
+
+void set_disco_strip()
+{
+  uint8_t divc = 0;
+  for (uint16_t i = 0; i < strip.numPixels(); i++) {
+    if ((i % DIVISER) == 0)divc++;
+    strip.setPixelColor(i, disco_lights[divc]);
+  }
+
+}
+
+void get_random_colours() {
+  uint8_t r = 0;
+  for (int a = 0; a < DIVISER; a++)
+  {
+    r = random(0, (CARRAY_LEN - 1));
+    disco_lights[a] = gColourArray[0];
+  }
+}
+
+
+
+
+volatile uint32_t red, green;
 uint32_t get_colour(int level)
 {
   red = 0;
   green = 0;
   /*we need to start to add red at a certain threshold then once past a nother threshold start
-  removing green.*/
+    removing green.*/
 
-  if(level > YELLOW_LIMIT){
-    red  = map((level - YELLOW_LIMIT), 0, (MAX_LED - YELLOW_LIMIT), 0, MAX_LED);  
+  if (level > YELLOW_LIMIT) {
+    red  = map((level - YELLOW_LIMIT), 0, (MAX_LED - YELLOW_LIMIT), 0, MAX_LED);
     green = map((MAX_LED - level), 0, (MAX_LED - YELLOW_LIMIT), 0, MAX_LED );
-  }else{
+  } else {
     /*We can assume this is a easy green so*/
     green = map(level, 0, YELLOW_LIMIT, 0, MAX_LED );
-   }
-  
-  return strip.Color(red,green,0);  
+  }
+
+  return strip.Color(red, green, 0);
 }
 
-void set_all_green()
+void sound_to_light()
 {
   int level = getLevel();
   s_output = get_colour(level);
@@ -128,8 +197,8 @@ void set_all_green()
 
 int getLevel()
 {
-   //Serial.println(g_MicLevel);
-  if(g_MicLevel > 450)g_MicLevel=450;
+  //Serial.println(g_MicLevel);
+  if (g_MicLevel > 450)g_MicLevel = 450;
   return map(g_MicLevel, 0, 450, 0, MAX_LED);
 }
 
@@ -138,7 +207,7 @@ int tmp_lvl;
 void timerIsr()
 {
   tmp_lvl = analogRead(MIC_AIO);
-  if(tmp_lvl > g_MicLevel){
+  if (tmp_lvl > g_MicLevel) {
     g_MicLevel = tmp_lvl;
   } else {
     if (g_MicLevel > 0) g_MicLevel--;

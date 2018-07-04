@@ -23,7 +23,4 @@ typedef uint32_t colour;
 //#define EFFECT_HOLD_SECS  30
 #define EFFECT_HOLD_SECS  3
 
-
-
-
 #endif
