@@ -9,6 +9,8 @@
 #ifdef __AVR__
 #include <avr/power.h>
 #endif
+/*Shows the intro animation a bit long for development*/
+//#define SHOW_START
 
 typedef uint8_t MODE;
 #define STOL    0
@@ -27,7 +29,9 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(76, PIN, NEO_GRB + NEO_KHZ800);
 
 
 /*This is our array of 32bit colours*/
-const PROGMEM uint32_t gColourArray[] = {0x00FFFFFF, 0x00FF0000, 0x0000FF00, 0x000000FF};
+#define DIVISER 4
+#define DISCO_TIME    50/*time in multiples of 10 ms how long each light is displayed for*/
+
 #define CARRAY_LEN    4
 
 /*Each effect has its own file to keep things easier, each effect must have a start_effect() public function
@@ -39,21 +43,31 @@ efct_phaseloop e_phaseloop;/*just loops round*/
 transistion e_trans;/*simple transtions*/
 utils util;
 
-//#define SHOW_START
+
 
 #define YELLOW_LIMIT        130
 #define MAX_LED             255 /*Max value a led can be*/
+
+#define MODE_MIN            1000 /*10 secs*/  
+#define MODE_MAX            30000
 
 typedef uint8_t S_COLOUR;
 #define GREEN   0
 #define YELLOW  1
 #define RED     2
 
-
+volatile uint32_t disco_lights[DIVISER];
+uint16_t disco_count = 0;
+const uint32_t gColourArray[] = { 
+                                 0x00FF0000,
+                                 0x0000FF00,
+                                 0x000000FF,
+                                 0x00FFFF00,
+                                 };
 volatile S_COLOUR s_colour;
 volatile uint32_t s_output;
 volatile int g_MicLevel = 0;
-
+uint16_t mode_count = 0;
 void setup() {
 #ifdef DEBUG
   Serial.begin(9600);
@@ -102,8 +116,9 @@ void setup() {
 #endif
 
   /*Set default mode*/
-  //mode = STOL;
-  mode = DISCO;
+   mode_count = random(MODE_MIN, MODE_MAX); 
+  mode = STOL;
+  //mode = DISCO;
 }
 
 void loop() {
@@ -120,27 +135,39 @@ void loop() {
     default:
       break;
   }
+  delay(10);
 
-
-
-  delay(1000);
-
+  if(mode_count == 0)
+  {
+    mode_count = random(MODE_MIN, MODE_MAX); 
+  }else{
+    mode_count--;
+  }
 }
-
-uint8_t d_state;
-#define DIVISER 4
-static uint32_t disco_lights[DIVISER];
 
 void show_disco()
 {
   //First set our array of random colours
-  get_random_colours();
+  //We only want to do this if we have displayed the same style for a length of time
+  if(disco_count == 0){
+    get_random_colours();
+    /*reset counter*/
+    disco_count = DISCO_TIME;
+  }else{
+    disco_count--;
+  }
 
   //Our array should now have the colours set
   //Now apply these colours to the strip
   strip.clear();
   set_disco_strip();
+  /*Set brightness is accordance to volume*/
+  int level = getLevel();
+  if(level < 50)level = 50;/*make sure we dont go completely off*/
+  strip.setBrightness(level);
+  
   strip.show();
+  //Serial.println("update disco");
 }
 
 
@@ -148,23 +175,36 @@ void set_disco_strip()
 {
   uint8_t divc = 0;
   for (uint16_t i = 0; i < strip.numPixels(); i++) {
-    if ((i % DIVISER) == 0)divc++;
+    if((i % (strip.numPixels()/DIVISER))==0)divc++;
+
+    //strip.setPixelColor(i, disco_lights[divc]);
     strip.setPixelColor(i, disco_lights[divc]);
+    //Serial.println(divc,DEC);
   }
 
 }
 
 void get_random_colours() {
   uint8_t r = 0;
+  uint8_t prev = 0;
   for (int a = 0; a < DIVISER; a++)
   {
-    r = random(0, (CARRAY_LEN - 1));
-    disco_lights[a] = gColourArray[0];
+    //Reduce the chance of duplicate colours
+    r = random(0, (CARRAY_LEN));
+    if(r == prev){
+      r = random(0, (CARRAY_LEN));
+    }
+    prev = r;
+
+    
+    disco_lights[a] = gColourArray[r];
+    
+    /*
+    Serial.println(r,DEC);
+    Serial.println(disco_lights[a],HEX);
+    */
   }
 }
-
-
-
 
 volatile uint32_t red, green;
 uint32_t get_colour(int level)
