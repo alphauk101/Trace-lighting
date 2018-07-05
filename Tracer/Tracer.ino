@@ -116,7 +116,7 @@ void setup() {
 #endif
 
   /*Set default mode*/
-   mode_count = random(MODE_MIN, MODE_MAX); 
+  mode_count = random(MODE_MIN, MODE_MAX); 
   mode = STOL;
   //mode = DISCO;
 }
@@ -140,6 +140,11 @@ void loop() {
   if(mode_count == 0)
   {
     mode_count = random(MODE_MIN, MODE_MAX); 
+    if(mode==STOL){
+      mode = DISCO;
+    }else{
+      mode = STOL;
+    }
   }else{
     mode_count--;
   }
