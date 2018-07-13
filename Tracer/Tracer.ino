@@ -148,6 +148,7 @@ void loop() {
   }else{
     mode_count--;
   }
+  
 }
 
 void show_disco()
