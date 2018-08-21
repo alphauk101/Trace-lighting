@@ -2,13 +2,18 @@
 #define DEFINES
 #include <stdio.h>
 
-typedef uint32_t colour;
+#define DEV_BOARD
 
+typedef uint32_t colour;
 
 #define DEBUG
 
 #define MIC_TIMER_INT     5000 /*Microseconds*/
+#ifdef DEV_BOARD
+#define MIC_AIO           A3
+#else
 #define MIC_AIO           A5
+#endif
 
 #define PIN 5 /*led data out pin*/
 

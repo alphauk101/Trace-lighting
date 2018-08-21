@@ -2,15 +2,15 @@
 #include "phaseloop.h"
 #include "trans.h"
 #include "utils.h"
-#include "nightride.h"
-#include "police.h"
+
+
 #include "defines.h"
 #include "TimerOne.h"
 #ifdef __AVR__
 #include <avr/power.h>
 #endif
 /*Shows the intro animation a bit long for development*/
-//#define SHOW_START
+#define SHOW_START
 
 typedef uint8_t MODE;
 #define STOL    0

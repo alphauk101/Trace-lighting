@@ -61,7 +61,7 @@ void efct_phaseloop::goToGreen() {
   }
 
   /*hold white for a while*/
-  delay(5000);
+  delay(0);
 }
 
 void efct_phaseloop::goToWhite() {
@@ -87,7 +87,7 @@ void efct_phaseloop::goToWhite() {
   }
 
   /*hold white for a while*/
-  delay(5000);
+  delay(0);
 }
 
 #ifdef NOPE
