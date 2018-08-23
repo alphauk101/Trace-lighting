@@ -41,22 +41,18 @@ void efct_phaseloop::start_effect(Adafruit_NeoPixel* strp) {
 void efct_phaseloop::goToGreen() {
 
   /*the leds are currently green so we are going to start feeding in a white phase*/
-  uint32_t lc = 0;
+
   uint8_t intens = 255;
   bool loop_locked = true;
   colour c;
   while (loop_locked) {
-    /*first set the pixels for this loop*/
-    for (uint16_t x = strip_ptr->numPixels(); x > 0; x--) {
-      /*set all to green*/
-      c = strip_ptr->Color(intens, MAX_COLOUR, intens);
-      util.setAll(c, strip_ptr);
-      strip_ptr->show();
-    }
 
-    if ((lc % 2) == 0)intens--;
-    lc++;
+    c = strip_ptr->Color(intens, MAX_COLOUR, intens);
+    util.setAll(c, strip_ptr);
+    strip_ptr->show();
 
+    
+    intens--;
     if (intens == 0) loop_locked = false;
   }
 
@@ -67,22 +63,19 @@ void efct_phaseloop::goToGreen() {
 void efct_phaseloop::goToWhite() {
 
   /*the leds are currently green so we are going to start feeding in a white phase*/
-  uint32_t lc = 0;
+
   uint8_t intens = 0;
   bool loop_locked = true;
   colour c;
   while (loop_locked) {
     /*first set the pixels for this loop*/
-    for (uint16_t x = strip_ptr->numPixels(); x > 0; x--) {
-      /*set all to green*/
-      c = strip_ptr->Color(intens, MAX_COLOUR, intens);
-      util.setAll(c, strip_ptr);
-      strip_ptr->show();
-    }
 
-    if ((lc % 2
-    ) == 0)intens++;
-    lc++;
+
+    c = strip_ptr->Color(intens, MAX_COLOUR, intens);
+    util.setAll(c, strip_ptr);
+    strip_ptr->show();
+
+    intens++;
     if (intens == MAX_COLOUR) loop_locked = false;
   }
 

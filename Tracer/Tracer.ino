@@ -139,7 +139,8 @@ void loop() {
 
   if(mode_count == 0)
   {
-    mode_count = random(MODE_MIN, MODE_MAX); 
+    //mode_count = random(MODE_MIN, MODE_MAX); 
+    mode = STOL;
     if(mode==STOL){
       mode = DISCO;
     }else{

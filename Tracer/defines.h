@@ -9,8 +9,10 @@ typedef uint32_t colour;
 #define DEBUG
 
 #define MIC_TIMER_INT     5000 /*Microseconds*/
+
+
 #ifdef DEV_BOARD
-#define MIC_AIO           A3
+#define MIC_AIO           A0
 #else
 #define MIC_AIO           A5
 #endif
