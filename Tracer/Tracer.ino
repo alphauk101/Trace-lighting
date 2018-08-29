@@ -2,6 +2,7 @@
 #include "phaseloop.h"
 #include "trans.h"
 #include "utils.h"
+#include "volanal.h"
 
 
 #include "defines.h"
@@ -14,7 +15,8 @@
 
 typedef uint8_t MODE;
 #define STOL    0
-#define DISCO   1
+//#define DISCO   1
+#define VOLANAL 1
 static MODE mode;
 
 // Parameter 1 = number of pixels in strip
@@ -38,10 +40,11 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(76, PIN, NEO_GRB + NEO_KHZ800);
   this will start the effect and block until complete (some effects may have other functions but this is mandatory.
   Effects will assume the lighting is properly setup ready to go*/
 
-efct_phaseloop e_phaseloop;/*just loops round*/
+efct_phaseloop        e_phaseloop;/*just loops round*/
 //efct_nightride e_nightride;
-transistion e_trans;/*simple transtions*/
-utils util;
+transistion           e_trans;/*simple transtions*/
+volanal               e_volanal;
+utils                 g_util;
 
 
 
@@ -82,7 +85,7 @@ void setup() {
 
   strip.begin();
 
-
+  e_volanal.init(&strip);
 
   /*initaite the startup*/
 
@@ -129,8 +132,8 @@ void loop() {
       /*Sets the level in accordance to the sound level*/
       sound_to_light();
       break;
-    case DISCO:
-      show_disco();
+    case VOLANAL:
+      //show_disco();
       break;
     default:
       break;
@@ -142,7 +145,7 @@ void loop() {
     //mode_count = random(MODE_MIN, MODE_MAX); 
     mode = STOL;
     if(mode==STOL){
-      mode = DISCO;
+      //mode = DISCO;
     }else{
       mode = STOL;
     }
@@ -152,6 +155,7 @@ void loop() {
   
 }
 
+#ifdef DISCO
 void show_disco()
 {
   //First set our array of random colours
@@ -176,7 +180,7 @@ void show_disco()
   strip.show();
   //Serial.println("update disco");
 }
-
+#endif
 
 void set_disco_strip()
 {
@@ -237,7 +241,7 @@ void sound_to_light()
   int level = getLevel();
   s_output = get_colour(level);
 
-  util.setAll(s_output, &strip);
+  g_util.setAll(s_output, &strip);
   strip.show();
 }
 

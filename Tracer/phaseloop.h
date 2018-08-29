@@ -10,8 +10,6 @@
 
 
 class efct_phaseloop{
-  utils util;
-
   public:
   void start_effect(Adafruit_NeoPixel*);
 

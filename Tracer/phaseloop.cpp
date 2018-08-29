@@ -1,5 +1,6 @@
 #include "phaseloop.h"
 
+extern utils      g_util;
 
 /*Lead tail effect defines*/
 #define TA    strip_ptr->Color(0, MAX_COLOUR, 0)
@@ -28,7 +29,7 @@ void efct_phaseloop::start_effect(Adafruit_NeoPixel* strp) {
   }
 
   /*Next appear to be fully on and burning up :)*/
-  util.setAll(strip_ptr->Color(0, MAX_COLOUR, 0), strip_ptr);
+  g_util.setAll(strip_ptr->Color(0, MAX_COLOUR, 0), strip_ptr);
   strip_ptr->show();
 
   delay(1000);
@@ -48,7 +49,7 @@ void efct_phaseloop::goToGreen() {
   while (loop_locked) {
 
     c = strip_ptr->Color(intens, MAX_COLOUR, intens);
-    util.setAll(c, strip_ptr);
+    g_util.setAll(c, strip_ptr);
     strip_ptr->show();
 
     
@@ -72,7 +73,7 @@ void efct_phaseloop::goToWhite() {
 
 
     c = strip_ptr->Color(intens, MAX_COLOUR, intens);
-    util.setAll(c, strip_ptr);
+    g_util.setAll(c, strip_ptr);
     strip_ptr->show();
 
     intens++;
@@ -109,7 +110,7 @@ void efct_phaseloop::doloop(uint8_t spd, uint8_t backint)
   /*as we go round the loop we want there to be a faded - not faded - faded type of effect*/
   colour bg = strip_ptr->Color(0, backint, 0);
   for (uint16_t x = strip_ptr->numPixels(); x > 0; x--) {
-    util.setAll(bg, strip_ptr);
+    g_util.setAll(bg, strip_ptr);
 
     strip_ptr->setPixelColor(x, TA);
     if ((x + 7) < strip_ptr->numPixels()) {

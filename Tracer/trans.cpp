@@ -1,5 +1,6 @@
 #include "trans.h"
 
+extern utils      g_util;
 
 void transistion::init(Adafruit_NeoPixel *str)
 {
@@ -14,7 +15,7 @@ void transistion::fadeDown()
   {
     c = strip_ptr->Color(0, steps, 0);
     
-    util.setAll(c, strip_ptr);
+    g_util.setAll(c, strip_ptr);
     strip_ptr->show();
     steps--;
     delay(FADE_TIME);
@@ -29,7 +30,7 @@ void transistion::fadeUp()
   {
     c = strip_ptr->Color(0, steps, 0);
     
-    util.setAll(c, strip_ptr);
+    g_util.setAll(c, strip_ptr);
     strip_ptr->show();
     steps++;
     delay(FADE_TIME);

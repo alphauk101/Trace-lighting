@@ -14,7 +14,6 @@ class transistion {
     void fadeUp(void);
     void fadeDown(void);
   private:
-    utils util;
     Adafruit_NeoPixel *strip_ptr;
 };
 
