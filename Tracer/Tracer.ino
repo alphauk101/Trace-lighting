@@ -120,7 +120,7 @@ void setup() {
 
   /*Set default mode*/
   mode_count = random(MODE_MIN, MODE_MAX); 
-  mode = STOL;
+  mode = VOLANAL;
   //mode = DISCO;
 }
 
@@ -134,12 +134,13 @@ void loop() {
       break;
     case VOLANAL:
       //show_disco();
+      show_volanal();
       break;
     default:
       break;
   }
   delay(10);
-
+/*
   if(mode_count == 0)
   {
     //mode_count = random(MODE_MIN, MODE_MAX); 
@@ -152,7 +153,13 @@ void loop() {
   }else{
     mode_count--;
   }
-  
+  */
+}
+
+void show_volanal()
+{
+  int level = getLevel();
+  e_volanal.vol_level(level);
 }
 
 #ifdef DISCO
@@ -249,8 +256,8 @@ void sound_to_light()
 int getLevel()
 {
   //Serial.println(g_MicLevel);
-  if (g_MicLevel > 450)g_MicLevel = 450;
-  return map(g_MicLevel, 0, 450, 0, MAX_LED);
+  if (g_MicLevel > MAX_MIC)g_MicLevel = MAX_MIC;
+  return map(g_MicLevel, MIN_MIC, MAX_MIC, 0, MAX_LED);
 }
 
 /*Microphone timer ISR*/
