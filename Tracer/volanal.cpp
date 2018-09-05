@@ -28,10 +28,44 @@ void volanal::vol_level(int level)
   //Using the number of steps show this on the leds
   for (uint8_t a = CENTER_LED; a < (CENTER_LED+NUM_STEPS); a++)
   {
-    if(vol_lvl >=  (a-CENTER_LED)){
+    if(vol_lvl >= (a-CENTER_LED)){
       strip_ptr->setPixelColor(a,strip_ptr->Color(0, MAX_COLOUR, 0));
+    }else{
+      /*Once the LED level exceeds the volume level theres no point carrying on*/
+      a=255;
     }
   }
+
+  //Using the number of steps show this on the leds
+  for (uint8_t a = 0; a < NUM_STEPS; a++)
+  {
+
+    if(vol_lvl >= a){
+      
+      strip_ptr->setPixelColor(a,strip_ptr->Color(0, MAX_COLOUR, 0));
+    }else{
+      /*Once the LED level exceeds the volume level theres no point carrying on*/
+      a=255;
+    }
+
+
+    /*
+    (NUM_STEPS-vol_lvl)
+    
+    if(vol_lvl >= (a-CENTER_LED)){
+      
+      strip_ptr->setPixelColor(a,strip_ptr->Color(0, MAX_COLOUR, 0));
+    }
+*/
+
+
+
+
+    
+  }
+
+
+  
   strip_ptr->show();
 
 }
