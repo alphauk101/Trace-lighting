@@ -4,9 +4,13 @@
 
 #define DEV_BOARD
 
+#define NUMBER_OF_LEDS  76
+
 /*Max and min mic levels these are used in the effects as well as the normalifier*/
 #define MAX_MIC     450
 #define MIN_MIC     0
+
+
 
 typedef uint32_t colour;
 

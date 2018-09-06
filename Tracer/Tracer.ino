@@ -11,7 +11,7 @@
 #include <avr/power.h>
 #endif
 /*Shows the intro animation a bit long for development*/
-#define SHOW_START
+//#define SHOW_START
 
 typedef uint8_t MODE;
 #define STOL    0
@@ -27,7 +27,7 @@ static MODE mode;
 //   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
 //   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
 //   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(76, PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUMBER_OF_LEDS, PIN, NEO_GRB + NEO_KHZ800);
 
 
 /*This is our array of 32bit colours*/
@@ -51,7 +51,7 @@ utils                 g_util;
 #define YELLOW_LIMIT        130
 #define MAX_LED             255 /*Max value a led can be*/
 
-#define MODE_MIN            1000 /*10 secs*/  
+#define MODE_MIN            1000 /*10 secs*/
 #define MODE_MAX            30000
 
 typedef uint8_t S_COLOUR;
@@ -61,21 +61,23 @@ typedef uint8_t S_COLOUR;
 
 volatile uint32_t disco_lights[DIVISER];
 uint16_t disco_count = 0;
-const uint32_t gColourArray[] = { 
-                                 0x00FF0000,
-                                 0x0000FF00,
-                                 0x000000FF,
-                                 0x00FFFF00,
-                                 };
+const uint32_t gColourArray[] = {
+  0x00FF0000,
+  0x0000FF00,
+  0x000000FF,
+  0x00FFFF00,
+};
 volatile S_COLOUR s_colour;
 volatile uint32_t s_output;
 volatile int g_MicLevel = 0;
 uint16_t mode_count = 0;
 void setup() {
+
 #ifdef DEBUG
   Serial.begin(9600);
   Serial.println("Trace started");
 #endif
+
 #if defined (__AVR_ATtiny85__)
   if (F_CPU == 16000000) clock_prescale_set(clock_div_1);
 #endif
@@ -86,11 +88,11 @@ void setup() {
   strip.begin();
 
   e_volanal.init(&strip);
-
+  e_trans.init(&strip);
   /*initaite the startup*/
 
 #ifdef SHOW_START
-  e_trans.init(&strip);
+
 
   e_trans.fadeUp();
   e_trans.fadeDown();
@@ -116,10 +118,16 @@ void setup() {
   /*It is better to hold the effect for sometime or else we risk looking a bit OTT*/
   delay(EFFECT_HOLD_SECS * 1000);
   e_trans.fadeDown();
+#else
+  /*quick on anima*/
+  e_trans.fadeUp();
+  e_trans.fadeDown();
 #endif
 
+
+  g_util.allOff(&strip);
   /*Set default mode*/
-  mode_count = random(MODE_MIN, MODE_MAX); 
+  mode_count = random(MODE_MIN, MODE_MAX);
   mode = VOLANAL;
   //mode = DISCO;
 }
@@ -140,25 +148,26 @@ void loop() {
       break;
   }
   delay(10);
-/*
-  if(mode_count == 0)
-  {
-    //mode_count = random(MODE_MIN, MODE_MAX); 
-    mode = STOL;
-    if(mode==STOL){
-      //mode = DISCO;
-    }else{
+  /*
+    if(mode_count == 0)
+    {
+      //mode_count = random(MODE_MIN, MODE_MAX);
       mode = STOL;
+      if(mode==STOL){
+        //mode = DISCO;
+      }else{
+        mode = STOL;
+      }
+    }else{
+      mode_count--;
     }
-  }else{
-    mode_count--;
-  }
   */
 }
 
 void show_volanal()
 {
   int level = getLevel();
+  level = 450;
   e_volanal.vol_level(level);
 }
 
@@ -167,11 +176,11 @@ void show_disco()
 {
   //First set our array of random colours
   //We only want to do this if we have displayed the same style for a length of time
-  if(disco_count == 0){
+  if (disco_count == 0) {
     get_random_colours();
     /*reset counter*/
     disco_count = DISCO_TIME;
-  }else{
+  } else {
     disco_count--;
   }
 
@@ -181,9 +190,9 @@ void show_disco()
   set_disco_strip();
   /*Set brightness is accordance to volume*/
   int level = getLevel();
-  if(level < 50)level = 50;/*make sure we dont go completely off*/
+  if (level < 50)level = 50; /*make sure we dont go completely off*/
   strip.setBrightness(level);
-  
+
   strip.show();
   //Serial.println("update disco");
 }
@@ -193,7 +202,7 @@ void set_disco_strip()
 {
   uint8_t divc = 0;
   for (uint16_t i = 0; i < strip.numPixels(); i++) {
-    if((i % (strip.numPixels()/DIVISER))==0)divc++;
+    if ((i % (strip.numPixels() / DIVISER)) == 0)divc++;
 
     //strip.setPixelColor(i, disco_lights[divc]);
     strip.setPixelColor(i, disco_lights[divc]);
@@ -209,17 +218,17 @@ void get_random_colours() {
   {
     //Reduce the chance of duplicate colours
     r = random(0, (CARRAY_LEN));
-    if(r == prev){
+    if (r == prev) {
       r = random(0, (CARRAY_LEN));
     }
     prev = r;
 
-    
+
     disco_lights[a] = gColourArray[r];
-    
+
     /*
-    Serial.println(r,DEC);
-    Serial.println(disco_lights[a],HEX);
+      Serial.println(r,DEC);
+      Serial.println(disco_lights[a],HEX);
     */
   }
 }
